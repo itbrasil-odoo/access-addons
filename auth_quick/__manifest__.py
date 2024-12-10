@@ -5,7 +5,7 @@
     "summary": """Odoo Authentication for developers / testers / support team""",
     "category": "Extra Tools",
     "images": ["images/icon.png"],
-    "version": "14.0.1.0.0",
+    "version": "14.0.1.0.1",
     "application": False,
     "author": "IT-Projects LLC, Ivan Yelizariev",
     "support": "apps@itpp.dev",

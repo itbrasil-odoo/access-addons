@@ -68,8 +68,15 @@ class AuthQuickMaster(http.Controller):
             headers={"Content-Type": "application/json"},
         )
         _logger.debug("Response from master odoo: %s", res.text)
-        result = res.json().get("result")
-        if not result.get("success"):
+        
+        try:
+            response_json = res.json()
+        except ValueError:
+            _logger.error("Invalid JSON response: %s", res.text)
+            return "Invalid response from server"
+
+        result = response_json.get("result")
+        if not result or not result.get("success"):
             return "Wrong token"
 
         build_login = result["data"]["build_login"]
@@ -78,14 +85,6 @@ class AuthQuickMaster(http.Controller):
         _logger.info("Successful Authentication as %s via token %s", build_login, token)
 
         if test_cr is False:
-            # A new cursor is used to authenticate the user and it cannot see the
-            # latest changes of current transaction.
-            # Therefore we need to make the commit.
-
-            # TODO: tests
-            # In test mode, one special cursor is used for all transactions.
-            # So we don't need to make the commit. More over commit() shall not be used,
-            # because otherwise test changes are not rollbacked at the end of test
             request.env.cr.commit()
 
         request.session.authenticate(request.db, build_login, token)
